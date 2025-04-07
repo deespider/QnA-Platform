@@ -14,8 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.shortcuts import render
+from django.urls import path, include
+from thread.views import QuestionListCreateAPIView
+from django.contrib.auth import logout as auth_logout
+from django.shortcuts import redirect
+
+def home(request):
+    return render(request, 'home.html')
+
+def logout_view(request):
+    auth_logout(request)
+    return redirect('home')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
+    path('api/', include('thread.urls')),
+    path('user/', include('userbase.urls')),
+    path('logout/', logout_view, name='logout'),
 ]
