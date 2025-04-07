@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Questions</title>
+    <style>
+        .error {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: red;
+            background-color: #ffebee;
+            padding: 5px;
+            border: 1px solid #ef9a9a;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Questions</h1>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'question_list_create' %}">Back to Feed</a></p>
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">Login</a> to view your questions.</p>
+    {% endif %}
+
+    <div class="error">
+        {% if error %}
+            {{ error }}
+        {% endif %}
+    </div>
+
+    {% for question in questions %}
+        <div style="margin-bottom: 20px;">
+            <h3>{{ question.title }}</h3>
+            <p>Posted on: {{ question.created_at }}</p>
+            {% for answer in question.answers %}
+                <div style="margin-left: 20px;">
+                    <p>{{ answer.content }}</p>
+                    <p>By: {{ answer.user.username }} | {{ answer.created_at }} | Likes: {{ answer.likes_count }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% empty %}
+        <p>You haven't posted any questions yet.</p>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Community Feed</title>
+</head>
+<body>
+    <h1>Community QnA Feed</h1>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'my_questions' %}">My Questions</a></p>
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>.</p>
+    {% endif %}
+
+    <!-- Post New Question -->
+    {% if user.is_authenticated %}
+        <h2>Ask a Question</h2>
+        <form method="post" action="{% url 'question_list_create' %}">
+            {% csrf_token %}
+            {{ question_form.as_p }}
+            <button type="submit">Post Question</button>
+        </form>
+    {% endif %}
+
+    <!-- Feed -->
+    <h2>All Questions</h2>
+    {% for question in questions %}
+        <div style="margin-bottom: 20px;">
+            <h3>Q{{ question.id }}. {{ question.title }}</h3>
+            <p><i> From: {{ question.user.username }} | On: {{ question.created_at }} </i></p>
+            {% for answer in question.answers %}
+                <div style="margin-left: 20px;">
+                    <p>{{ answer.content }}</p>
+                    <p><i>From: {{ answer.user.username }} | Likes: {{ answer.likes_count }}</i></p>
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'like_answer' answer.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="_method" value="PUT">
+                            <button type="submit">
+                                {% if user in answer.likes %}Unlike{% else %}Like{% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'answer_create' question.id %}">
+                    {% csrf_token %}
+                    {{ answer_form.as_p }}
+                    <button type="submit">Reply</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No questions yet.</p>
+    {% endfor %}
+</body>
+</html>
