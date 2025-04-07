@@ -1,0 +1,60 @@
+version: "3"
+
+services:
+  qna_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    image: qna_image
+    container_name: qna-web
+    volumes:
+      - .:/qna/
+    ports:
+      - 9999:9900
+    command: sh -c "python manage.py showmigrations && python manage.py runserver 0.0.0.0:9900"
+    depends_on:
+      - qna_db
+      - qna_celery
+    stdin_open: true
+    tty: true
+
+  qna_db:
+    image: postgres:14.1-alpine
+    volumes:
+      - qna_volume:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - '5449:5432'
+    container_name: qna_db
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_HOST}
+
+  qna_redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6380:6379"
+    container_name: qna_redis
+
+  qna_celery:
+    image: qna_image
+    restart: always
+    container_name: qna-celery
+    command: celery -A QnA_Platform worker -l info
+    volumes:
+      - .:/qna/
+    depends_on:
+      - qna_redis
+    scale: 1
+
+volumes:
+  qna_volume:
+
+
+networks:
+  default:
+    name: community_network
+    external: false
