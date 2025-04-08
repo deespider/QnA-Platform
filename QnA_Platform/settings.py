@@ -80,7 +80,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'QnA_Platform.wsgi.application'
-REDIS_HOST = config("REDIS_HOST")
+REDIS_HOST = config("REDIS_HOST", default='qna_redis')
 
 CACHES = {
     'default': {
@@ -98,7 +98,7 @@ CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND',
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default=f'redis://{REDIS_HOST}:6379/1')
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
-CELERY_TASK_ALWAYS_EAGER = bool(os.getenv("CELERY_TASK_ALWAYS_EAGER", False))
+CELERY_TASK_ALWAYS_EAGER = config('CELERY_TASK_ALWAYS_EAGER', default=False, cast=bool)
 CELERY_TIMEZONE = "Asia/Kolkata"
 
 
