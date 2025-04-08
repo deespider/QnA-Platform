@@ -1,6 +1,7 @@
+import  rest_framework.status as http_status
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Question, Answer
 from .serializers import QuestionSerializer
@@ -23,7 +24,7 @@ class QuestionListCreateAPIView(APIView):
 
     def post(self, request):
         if not request.user.is_authenticated:
-            return Response({"detail": "Please log in to post a question."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"detail": "Please log in to post a question."}, status=http_status.HTTP_401_UNAUTHORIZED)
         form = QuestionForm(request.POST)
         if form.is_valid():
             question = form.save(commit=False)
@@ -57,7 +58,10 @@ class AnswerCreateAPIView(APIView):
                 'error': form.errors
             })
         except Question.DoesNotExist:
-            return Response({"detail": "Question not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Question not found."}, status=http_status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({"error": f"{str(e)}"}, status=http_status.HTTP_400_BAD_REQUEST)
 
 class LikeAnswerAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -71,7 +75,7 @@ class LikeAnswerAPIView(APIView):
                 answer.likes.add(request.user)
             return redirect('question_list_create')
         except Answer.DoesNotExist:
-            return Response({"detail": "Answer not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Answer not found."}, status=http_status.HTTP_404_NOT_FOUND)
 
 class MyQuestionsAPIView(APIView):
     permission_classes = [IsAuthenticated]
