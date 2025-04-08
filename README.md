@@ -24,5 +24,6 @@ The QnA Platform is a simple web-based question-and-answer application developed
 <img width="663" alt="image" src="https://github.com/user-attachments/assets/9470b6d2-b201-4d64-90a9-6d3c950cc58c" />
 
 3. Feed
-<img width="663" alt="image" src="https://github.com/user-attachments/assets/b74e6560-5347-4747-8a1e-abb3f7eedec3" />
+<img width="687" alt="image" src="https://github.com/user-attachments/assets/6ba2b5a8-ece4-430d-b291-2494a9ed088b" />
+
 
